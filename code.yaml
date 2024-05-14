@@ -1,0 +1,31 @@
+python -m pip download \
+   --only-binary=:all: \
+   --implementation cp \
+
+pip3 download -d . checkov
+
+"OneDrive - UNCOMN, LLC\Documents\OneNote Notebooks\QC-Tools\"
+
+tar -czvf cfn_lint-0.86.4-with-deps.tar.gz .
+
+"C:\Users\acarter\OneDrive - UNCOMN, LLC\Documents\QC-Tools\checkov"
+
+tar -czvf checkov-3.2.74-with-deps.tar.gz .
+
+
+tar -czvf cloudformation-guard-3.1.1-with-deps.tar.gz .
+
+cfn-lint.0.86.4
+
+https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
+
+sudo dnf install gcc openssl-devel bzip2-devel sqlite-devel
+
+rm -f -py2.py3-none-any.whl*
+
+find . -maxdepth 1 -type f -delete
+
+
+https://us-gov-west-1.console.amazonaws-us-gov.com/s3/buckets/qc-tools-test
+
+wget https://my_bucket.s3.amazonaws.com/s3/buckets/qc-tools-test
