@@ -6,7 +6,7 @@ pip3 download -d . checkov
 
 "OneDrive - UNCOMN, LLC\Documents\OneNote Notebooks\QC-Tools\"
 
-tar -czvf cfn_lint-0.86.4-with-deps.tar.gz .
+tar -czvf cfn_lint-0.87.2-with-deps.tar.gz .
 
 "C:\Users\acarter\OneDrive - UNCOMN, LLC\Documents\QC-Tools\checkov"
 
@@ -15,11 +15,6 @@ tar -czvf checkov-3.2.74-with-deps.tar.gz .
 
 tar -czvf cloudformation-guard-3.1.1-with-deps.tar.gz .
 
-cfn-lint.0.86.4
-
-https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
-
-sudo dnf install gcc openssl-devel bzip2-devel sqlite-devel
 
 rm -f -py2.py3-none-any.whl*
 
@@ -29,3 +24,53 @@ find . -maxdepth 1 -type f -delete
 https://us-gov-west-1.console.amazonaws-us-gov.com/s3/buckets/qc-tools-test
 
 wget https://my_bucket.s3.amazonaws.com/s3/buckets/qc-tools-test
+
+ssh -i "Acarter.pem" ec2-user@ec2-160-1-150-147.us-gov-west-1.compute.amazonaws.com
+
+aws s3 cp /path/to/your/folder s3://your-bucket-name/your-folder/ --recursive
+
+
+
+import requests
+import pprint
+
+def fetch_dependencies(package_name):
+    url = 'https://pypi.org/pypi/{}/json'.format(package_name)
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Check for HTTP errors
+        data = response.json()
+        return data['info'].get('requires_dist', [])
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data for {package_name}: {e}")
+        return []
+    except ValueError as e:
+        print(f"Error parsing JSON for {package_name}: {e}")
+        return []
+
+def compare_dependencies(package1, package2):
+    deps1 = fetch_dependencies(package1)
+    deps2 = fetch_dependencies(package2)
+
+    # Convert lists to sets for easier comparison
+    set_deps1 = set(deps1)
+    set_deps2 = set(deps2)
+
+    # Find differences
+    only_in_deps1 = set_deps1 - set_deps2
+    only_in_deps2 = set_deps2 - set_deps1
+
+    print(f"Dependencies only in {package1}:")
+    pprint.pprint(only_in_deps1)
+    print(f"\nDependencies only in {package2}:")
+    pprint.pprint(only_in_deps2)
+
+# Define the package names
+package1 = 'checkov'
+package2 = 'cfn-lint'  # Corrected the package name
+
+# Compare the dependencies
+compare_dependencies(package1, package2)
+
+
+python compare_dependencies.py
