@@ -4,11 +4,11 @@ python -m pip download \
 
 pip3 download -d . checkov
 
-"OneDrive - UNCOMN, LLC\Documents\OneNote Notebooks\QC-Tools\"
+"OneDrive - UNCOMN, LLC\Documents\QC-Tools\"
 
 tar -czvf cfn_lint-0.87.2-with-deps.tar.gz .
 
-"C:\Users\acarter\OneDrive - UNCOMN, LLC\Documents\QC-Tools\checkov"
+"C:\Users\acarter\OneDrive - UNCOMN, LLC\Documents
 
 tar -czvf checkov-3.2.74-with-deps.tar.gz .
 
@@ -23,54 +23,39 @@ find . -maxdepth 1 -type f -delete
 
 https://us-gov-west-1.console.amazonaws-us-gov.com/s3/buckets/qc-tools-test
 
-wget https://my_bucket.s3.amazonaws.com/s3/buckets/qc-tools-test
+aws s3 cp /home/ec2-user/ s3://qc-tools-test/s3/buckets/qc-tools-test/ --recursive
 
 ssh -i "Acarter.pem" ec2-user@ec2-160-1-150-147.us-gov-west-1.compute.amazonaws.com
 
-aws s3 cp /path/to/your/folder s3://your-bucket-name/your-folder/ --recursive
+ssh -i "Acarter.pem" ec2-user@ec2-3-30-221-26.us-gov-west-1.compute.amazonaws.com
 
-
+/home/ec2-user/
 
 import requests
 import pprint
 
-def fetch_dependencies(package_name):
-    url = 'https://pypi.org/pypi/{}/json'.format(package_name)
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Check for HTTP errors
-        data = response.json()
-        return data['info'].get('requires_dist', [])
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data for {package_name}: {e}")
-        return []
-    except ValueError as e:
-        print(f"Error parsing JSON for {package_name}: {e}")
-        return []
+def get_package_info(package_name):
+    url = f'https://pypi.org/pypi/{package_name}/json'
+    response = requests.get(url)
+    
+    return response.json() if response.status_code == 200 else None
 
-def compare_dependencies(package1, package2):
-    deps1 = fetch_dependencies(package1)
-    deps2 = fetch_dependencies(package2)
+def list_dependencies(package_name):
+    package_info = get_package_info(package_name)
+    
+    dependencies = package_info['info']['requires_dist'] if package_info else None
+    version = package_info['info']['version'] if package_info else "Unknown"
+    
+    print(f"Version for package '{package_name}': {version}")
+    print(f"Dependencies for package '{package_name}':")
+    [print(f"  - {dep}") for dep in dependencies] if dependencies else print("  - None")
 
-    # Convert lists to sets for easier comparison
-    set_deps1 = set(deps1)
-    set_deps2 = set(deps2)
-
-    # Find differences
-    only_in_deps1 = set_deps1 - set_deps2
-    only_in_deps2 = set_deps2 - set_deps1
-
-    print(f"Dependencies only in {package1}:")
-    pprint.pprint(only_in_deps1)
-    print(f"\nDependencies only in {package2}:")
-    pprint.pprint(only_in_deps2)
-
-# Define the package names
-package1 = 'checkov'
-package2 = 'cfn-lint'  # Corrected the package name
-
-# Compare the dependencies
-compare_dependencies(package1, package2)
-
+if __name__ == "__main__":
+    package_name = input("Enter the package name: ")
+    list_dependencies(package_name)
 
 python compare_dependencies.py
+
+diff lib
+
+aws s3 cp s3://buckets/qc-tools-test . --recursive
